@@ -1,0 +1,22 @@
+.wrapper {
+    display: flex;
+    justify-content: center;
+}
+.chatBox {
+    background-color: #f1f1f1;
+    border-radius: 10px;
+    padding: 10px;
+    position: relative;
+    margin-bottom: 20px;
+    margin-left: 10px;
+}
+
+.chatBox::before {
+    content: '';
+    position: absolute;
+    bottom: 5px;
+    left: -18px;
+    border-width: 10px;
+    border-style: solid;
+    border-color: transparent #f1f1f1 transparent transparent;
+}

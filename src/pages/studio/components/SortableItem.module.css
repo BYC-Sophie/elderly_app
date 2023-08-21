@@ -1,0 +1,22 @@
+.sortItem {
+    position: relative;
+}
+
+.sortItem:hover {
+    padding-left: 0px !important;
+}
+
+.menuIcon {
+    position: absolute;
+    left: -20px;
+    color: #a1a0a0;
+    display: none !important;
+}
+
+.content:hover > .menuIcon {
+    display: inline !important;
+}
+
+.content {
+    position: relative;
+}
