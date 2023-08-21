@@ -32,33 +32,39 @@ export const RobotGPT = ({open = true, onClose, editingWord, onSubmit, html}) =>
   const handleClickSend = useCallback(async () => {
     try {
       setLoading(true);
-      const userMessage = {
-        "role": "user",
-        "content": `
-              我有一个富文本格式的段落: ${htmlContent}. 
-              现在我会给你下面的提示，你来帮我修改这个富文本格式的段落，
-              修改提示为：
-              "{${word}}".
-              \n
-              你只需要输出修改后的内容
-            `
-      };
-      const res = await authedRequest.post(`https://api.openai.com/v1/chat/completions`, {
-        "model": "gpt-3.5-turbo",
-        "messages": [
-          //...messages,
-          userMessage
-        ],
-        "temperature": 0.7
+      // const userMessage = {
+      //   "role": "user",
+      //   "content": `
+      //         我有一个富文本格式的段落: ${htmlContent}. 
+      //         现在我会给你下面的提示，你来帮我修改这个富文本格式的段落，
+      //         修改提示为：
+      //         "{${word}}".
+      //         \n
+      //         你只需要输出修改后的内容
+      //       `
+      // };
+      const data = {
+        "text": htmlContent,
+        "instruction": word
+      }
+      console.log(data)
+      const res = await authedRequest.post(`http://localhost:8000/apis/regenerate`, {
+          "text": htmlContent,
+          "instruction": word
       });
-      if (res && res.data) {
-        const data = res.data;
-        if (data.choices.length > 0) {
-          console.log(data)
-          const gptResponse = data.choices[0].message.content;
-          setMessages([...messages, userMessage, data.choices[0].message]);
-          setHtmlContent(gptResponse);
-        }
+      // if (res && res.data) {
+      //   const data = res.data;
+      //   if (data.choices.length > 0) {
+      //     console.log(data)
+      //     const gptResponse = data.choices[0].message.content;
+      //     // setMessages([...messages, userMessage, data.choices[0].message]);
+      //     setHtmlContent(gptResponse);
+      //   }
+      // }
+      if (res && res.data){
+        const gptResponse = res.data["text"]
+        console.log(gptResponse)
+        setHtmlContent(gptResponse)
       }
     } catch (err) {
 
@@ -81,7 +87,7 @@ export const RobotGPT = ({open = true, onClose, editingWord, onSubmit, html}) =>
             className={'me-2'}
             src={RobotIcon}/>
           <Typography className={'me-auto'} >
-            如果需要我的帮助，请输入您的prompt~
+            如果需要我的帮助，请描述您的修改建议
           </Typography>
           <IconButton>
             <CloseIcon onClick={onClose}/>
@@ -105,7 +111,7 @@ export const RobotGPT = ({open = true, onClose, editingWord, onSubmit, html}) =>
           }}
           fullWidth
           className={'mt-2'}
-          label={'输入您修改的想法，让gpt帮你修改'}
+          label={'输入您的想法，让智能助手帮你修改'}
         ></TextField>
         <Box className={'mt-3'}>
           <Stack direction={'row'} spacing={2}>

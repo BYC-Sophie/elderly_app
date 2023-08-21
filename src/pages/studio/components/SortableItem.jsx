@@ -58,7 +58,7 @@ export const SortableItem = (
             <EditIcon fontSize={'small'}/>
           </ListItemIcon>
           <ListItemText>
-            Edit
+            编辑
           </ListItemText>
         </MenuItem>
 
@@ -69,7 +69,7 @@ export const SortableItem = (
             <DeleteForeverIcon fontSize={'small'}/>
           </ListItemIcon>
           <ListItemText>
-            Delete
+            删除
           </ListItemText>
         </MenuItem>
 
@@ -80,7 +80,7 @@ export const SortableItem = (
             <PsychologyIcon />
           </ListItemIcon>
           <ListItemText>
-            Regenrate
+            智能修改
           </ListItemText>
         </MenuItem>
 
