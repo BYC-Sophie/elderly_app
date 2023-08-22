@@ -7,6 +7,8 @@ import ChatIcon from '@mui/icons-material/Chat';
 import Playground from "./pages/playground";
 import Studio from "./pages/studio";
 import ChatGpt from "./pages/chatgpt";
+import ArticlePage from './pages/Article/article'
+
 function App() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -52,6 +54,9 @@ function App() {
         <Route path={'playground'} element={<Playground />}/>
         <Route path={'studio'} element={<Studio />}/>
         <Route path={'chat-gpt'} element={<ChatGpt />}/>
+
+        {/* Post Article Page */}
+        <Route path='/article/:id' element={<ArticlePage />} />
       </Routes>
       <BottomNavigation
         onChange={handleChange}

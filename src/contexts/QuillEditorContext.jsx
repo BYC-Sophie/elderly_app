@@ -1,6 +1,6 @@
 import {createContext, useContext, useEffect, useState} from "react";
 import {Box, Button, Dialog, DialogContent, DialogTitle} from "@mui/material";
-import QuillEditor from "../components/QuillEditor";
+import QuillEditor from "../Components/QuillEditor";
 
 
 const QuillEditorContext = createContext(null);
