@@ -38,6 +38,29 @@ export const articleSlice = createSlice({
         state.articleContents = tempArticleContents;
       }
     },
+    insertVideo: (state, action) => {
+      const {paragraphId, src} = action.payload;
+      let tempArticleContents = [...state.articleContents];
+      const paragraphIndex = tempArticleContents.findIndex(item => item.id === paragraphId);
+      const html = `<p>
+            <video width="100%" controls>
+              <source src="${src}">
+            </video>
+      </p>`;
+      const delta = htmlToDelta(html);
+      if (paragraphIndex !== -1) {
+        tempArticleContents = [
+          ...tempArticleContents.slice(0, paragraphIndex + 1),
+          {
+            id: uuidv4(),
+            content: html,
+            delta
+          },
+          ...tempArticleContents.slice(paragraphIndex + 1)
+        ];
+        state.articleContents = tempArticleContents;
+      }
+    },
     swapParagraph: (state, action) => {
       const tempArticleContents = [...state.articleContents];
       const {oldIndex, newIndex} = action.payload;
@@ -183,7 +206,8 @@ export const {
   swapParagraph,
   updateArticleContents,
   deleteArticleContents,
-  insertImage
+  insertImage,
+  insertVideo
 } = articleSlice.actions
 
 export const articleReducer = articleSlice.reducer;

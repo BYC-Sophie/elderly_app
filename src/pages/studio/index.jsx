@@ -11,7 +11,8 @@ import {
   deleteArticleContents, insertImage,
   sortArticleWords,
   swapParagraph,
-  updateArticleContents
+  updateArticleContents,
+  insertVideo
 } from "../../reducers/article.slice";
 import {SortableList} from "./components/SortableList";
 import {SortableItem} from "./components/SortableItem";
@@ -31,6 +32,7 @@ export default function Studio() {
   const [editingParagraph, setEditingParagraph] = useState(null);
   const {openQuillEditor} = useQuillEditorContext();
 
+  // TODO: 这里要改成按句子分block的形式
   const handleClickEdit = useCallback((paragraphId) => {
     const articleContent = articleContents.find(item => item.id === paragraphId);
     if (articleContent) {
@@ -47,6 +49,7 @@ export default function Studio() {
       })
     }
   }, [articleContents]);
+
 
   const handleClickOpenEditor = () => {
     openQuillEditor({
@@ -89,6 +92,15 @@ export default function Studio() {
       src
     }))
   }
+
+  const handleSelectVideo = async (paragraph, src) => {
+    // TODO: add video
+    dispatch(insertVideo({
+      paragraphId: paragraph.id,
+      src
+    }))
+  }
+
 
   return (
     <Box paddingBottom={'50px'}>
@@ -145,6 +157,9 @@ export default function Studio() {
                   <MultiMediaMenu
                     onSelectImage={(src) => {
                       handleSelectImage(paragraph, src);
+                    }}
+                    onSelectVideo={(src) => {
+                      handleSelectVideo(paragraph, src)
                     }}
                   />
                 </Box>

@@ -87,7 +87,10 @@ export const SortableItem = (
       </Menu>
 
 
-      <div className={`w-100 ${SortableItemStyle.content}`}>
+      {/* <div className={`w-100 ${SortableItemStyle.content}`}> */}
+      <div className={`w-100 ${SortableItemStyle.content}`} onClick={e => {
+        setAnchorEl(e.currentTarget)
+      }}>
         <MoreVertIcon
           onClick={e => {
             setAnchorEl(e.currentTarget);
