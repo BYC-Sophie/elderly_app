@@ -12,8 +12,10 @@ export const SortableItem = (
     onClickEdit,
     onClickDelete,
     onClickReGenerate,
+    onClickGenerate,
     border=true,
     endComponent,
+    contentType,
   }) => {
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -32,8 +34,15 @@ export const SortableItem = (
     }
   }
 
+  const handleClickGenerate = () => {
+    if(contentType === 'image' && onClickGenerate) {
+      onClickGenerate();
+      setAnchorEl(null);
+    }
+  }
+
   const handleClickReGenerate = () => {
-    if (onClickReGenerate) {
+    if (contentType === 'text' && onClickReGenerate) {
       onClickReGenerate();
       setAnchorEl(null);
     }
@@ -49,18 +58,21 @@ export const SortableItem = (
           setAnchorEl(null);
         }}
       >
-        <MenuItem
-          onClick={handleClickEdit}
-          style={{
-          width: '200px'
-        }}>
-          <ListItemIcon>
-            <EditIcon fontSize={'small'}/>
-          </ListItemIcon>
-          <ListItemText>
-            编辑
-          </ListItemText>
-        </MenuItem>
+        {contentType === 'text' && (
+          <MenuItem
+            onClick={handleClickEdit}
+            style={{
+            width: '200px'
+          }}>
+            <ListItemIcon>
+              <EditIcon fontSize={'small'}/>
+            </ListItemIcon>
+            <ListItemText>
+              编辑
+            </ListItemText>
+          </MenuItem>
+        )}
+        
 
         <MenuItem
           onClick={handleClickDelete}
@@ -73,16 +85,32 @@ export const SortableItem = (
           </ListItemText>
         </MenuItem>
 
-        <MenuItem
-          onClick={handleClickReGenerate}
-        >
-          <ListItemIcon>
-            <PsychologyIcon />
-          </ListItemIcon>
-          <ListItemText>
-            智能修改
-          </ListItemText>
-        </MenuItem>
+        {contentType === 'text' && (
+          <MenuItem
+            onClick={handleClickReGenerate}
+          >
+            <ListItemIcon>
+              <PsychologyIcon />
+            </ListItemIcon>
+            <ListItemText>
+              智能修改
+            </ListItemText>
+          </MenuItem>
+        )}
+
+        {contentType === 'image' && (
+          <MenuItem onClick={handleClickGenerate}>
+            <ListItemIcon>
+              <PsychologyIcon />
+            </ListItemIcon>
+            <ListItemText>
+              文字生成
+            </ListItemText>
+          </MenuItem>
+        )}
+
+
+        
 
       </Menu>
 
@@ -95,7 +123,7 @@ export const SortableItem = (
           onClick={e => {
             setAnchorEl(e.currentTarget);
           }}
-          className={SortableItemStyle.menuIcon} />
+          className={[SortableItemStyle.menuIcon, "drag-handle"].join(" ")} />
         {children}
       </div>
 

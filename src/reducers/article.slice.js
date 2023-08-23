@@ -31,7 +31,8 @@ export const articleSlice = createSlice({
           {
             id: uuidv4(),
             content: html,
-            delta
+            delta,
+            contentType: 'image',
           },
           ...tempArticleContents.slice(paragraphIndex + 1)
         ];
@@ -54,7 +55,8 @@ export const articleSlice = createSlice({
           {
             id: uuidv4(),
             content: html,
-            delta
+            delta,
+            contentType: 'video',
           },
           ...tempArticleContents.slice(paragraphIndex + 1)
         ];
@@ -74,7 +76,8 @@ export const articleSlice = createSlice({
       state.articleContents = [...state.articleContents, {
         id: uuidv4(),
         content: content,
-        delta: delta
+        delta: delta,
+        contentType: 'text',
       }];
     },
     updateArticleContents: (state, action) => {

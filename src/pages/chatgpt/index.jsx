@@ -13,7 +13,11 @@ import Sending from "./components/Sending";
 import RobotIcon from '../../assets/images/robot.png';
 import axios from 'axios'
 import CloseIcon from '@mui/icons-material/Close';
-let messagesStore = [];
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { addArticleContents } from '../../reducers/article.slice';
+
+// let messagesStore = [];
 
 export default function ChatGpt() {
   // const [prompt, setPrompt] = useState('');
@@ -73,7 +77,7 @@ export default function ChatGpt() {
 
   // }, [messages, prompt])
 
-  const [isGenerating, setIsGenerating] = useState(false)
+  	const [isGenerating, setIsGenerating] = useState(false)
 	const [isLoadingResponse, setIsLoadingResponse] = useState(false)
 	const [isLoading, setIsLoading] = useState(true)
 	const [showRegenerateInput, setShowRegenerateInput] = useState(false);
@@ -81,12 +85,17 @@ export default function ChatGpt() {
 	const [generatedArticle, setGeneratedArticle] = useState("我上周有幸去了香港，这是一次非常有趣的旅行。在香港，我参观了香港科技大学和香港中文大学，这两所大学给我留下了深刻的印象。香港中文大学坐落在一个广阔而美丽的校园中，风景绝佳，给人一种宁静而舒适的感觉。然而，与市区相比，它略微偏远了一些。而香港科技大学则更加注重学术氛围，给人一种严谨而专注的感觉。从学校的位置来看，它靠近海边，可以欣赏到壮丽的海景。\n\n\
 除了大学，我还去了香港的南丫岛。在岛上，我品尝了正宗的烧烤和西米露，味道非常美味。在岛上散步时，我欣赏着迷人的风景，感受着海风的拂面。虽然没有遇到什么特别有趣的人和经历，但我对南丫岛的美景和美食印象深刻。\n\n\
 这次香港之行让我再次感受到了香港的独特魅力。无论是追寻学术的热忱，还是品味美食的满足，香港都能够给人带来难忘的经历。我希望有机会能再次回到这个令人神往的地方，继续发掘更多的惊喜和美好。");
+	const articleContents = useSelector(state => state.article.articleContents)
+	const dispatch = useDispatch()
+	const navigate = useNavigate()
+
 	const [messages, setMessages] = useState([
-		{
-		  text: '您好！我是智能助手。您可以简要介绍一下您想分享的经历吗？我会引导帮助您完成创作！',
-		  isUser: false, // Bot message
-		},
-	  ]);
+	{
+		text: '您好！我是智能助手。您可以简要介绍一下您想分享的经历吗？我会引导帮助您完成创作！',
+		isUser: false, // Bot message
+	},
+	]);
+
 	useEffect(() => {
 		async function fetchUserInfo() {
 			axios.get('user/getUser').then((resp) => {
@@ -100,6 +109,21 @@ export default function ChatGpt() {
 		
 	}, [])
 
+	const addToEditTab = () => {
+		const generatedParagraphs = generatedArticle.split(/\n+/)
+		console.log(generatedParagraphs)
+		console.log(articleContents)
+
+		generatedParagraphs.forEach(element => {
+			dispatch(addArticleContents({
+				content: element,
+				delta: null
+			}))
+		});
+		handleCloseDialog()
+		navigate("/studio")
+
+	}
 	
 	const regenerateSampleArticle = async (userInstruction) => {
 
@@ -390,7 +414,6 @@ export default function ChatGpt() {
 								<Button
 								variant='contained'
 								onClick={() => {
-									// TODO: 将 regenerateInput 发送到后端进行处理, regenerateInput是User的Instruction
 									// 在后端重新生成文章并更新 generatedArticle
 									regenerateSampleArticle(regenerateInput)
 									setShowRegenerateInput(false); // 关闭重新生成输入框
@@ -414,6 +437,7 @@ export default function ChatGpt() {
 									variant='contained'
 									onClick={() => {
 										// TODO: 把文章添加到edit tab
+										addToEditTab()
 									}}
 								>
 									自行编辑

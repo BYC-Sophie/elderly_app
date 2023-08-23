@@ -2,7 +2,7 @@ import AddIcon from "@mui/icons-material/Add";
 import {Box, Button, Dialog, DialogContent, DialogTitle, Fab} from "@mui/material";
 import {useEffect, useLayoutEffect, useState} from "react";
 
-import QuillEditor from "../../../components/QuillEditor";
+import QuillEditor from "../../../Components/QuillEditor";
 
 
 export default function EditParagraph({onSubmit, defaultValue}) {

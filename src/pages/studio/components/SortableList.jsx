@@ -15,6 +15,7 @@ export const SortableList = (
     if (listRef.current) {
       new Sortable(listRef.current, {
         animation: 150,
+        handle: ".drag-handle",
         onEnd: (e) => {
           if (typeof onDragEnd === 'function') {
             onDragEnd(e.oldIndex, e.newIndex, e.item.id, id);

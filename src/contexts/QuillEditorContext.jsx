@@ -64,7 +64,9 @@ export const QuillEditorProvider = ({children}) => {
 
   const handleSubmit = () => {
     events && events.onSubmit && events.onSubmit(paragraph, delta);
+    console.log(delta)
     closeQuillEditor();
+
   }
 
   useEffect(() => {

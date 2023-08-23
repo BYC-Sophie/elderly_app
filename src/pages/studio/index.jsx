@@ -36,8 +36,16 @@ export default function Studio() {
   const handleClickEdit = useCallback((paragraphId) => {
     const articleContent = articleContents.find(item => item.id === paragraphId);
     if (articleContent) {
+      let tempDelta = articleContent.delta
+      if(! articleContent.delta){
+        tempDelta = {
+          ops: [
+            {insert: articleContent.content}
+          ]
+        }
+      }
       openQuillEditor({
-        defaultValue: articleContent.delta,
+        defaultValue: tempDelta,
         title: '编辑段落',
         onSubmit: (paragraph, delta) => {
           dispatch(updateArticleContents({
@@ -73,6 +81,8 @@ export default function Studio() {
     if (oldIndex !== newIndex) {
       dispatch(swapParagraph(oldIndex, newIndex));
     }
+
+
   }
 
   const handleGPTSubmit = (paragraph) => {
@@ -114,11 +124,11 @@ export default function Studio() {
           setOpenRobot(false)
         }}
       />
-      <Alert style={{
+      {/* <Alert style={{
         marginTop: '30px'
       }} severity="warning">
         您还没有创建段落！点击下面的按钮即可创建。
-      </Alert>
+      </Alert> */}
       <Box textAlign={'center'} marginTop={'30px'}>
         <Button
           onClick={handleClickOpenEditor}
@@ -149,6 +159,9 @@ export default function Studio() {
                 setEditingParagraph(paragraph);
                 setOpenRobot(true);
               }}
+              onClickGenerate={() => {
+                // TODO: Image captioning and chat
+              }}
               key={paragraph.id}
               id={paragraph.id}
               border={false}
@@ -164,10 +177,12 @@ export default function Studio() {
                   />
                 </Box>
               )}
+              contentType={paragraph.contentType}
+
             >
               <div
                 key={paragraph.id}
-                className={'p-2 mt-2 w-100'} >
+                className={'p-4 mt-2 w-100'} >
                 <div
                   style={{
                     wordBreak: 'break-all'
