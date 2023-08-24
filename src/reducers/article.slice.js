@@ -67,9 +67,13 @@ export const articleSlice = createSlice({
       const tempArticleContents = [...state.articleContents];
       const {oldIndex, newIndex} = action.payload;
       const temp = tempArticleContents[oldIndex];
+
       tempArticleContents[oldIndex] = tempArticleContents[newIndex];
       tempArticleContents[newIndex] = temp;
       state.articleContents = tempArticleContents;
+
+
+
     },
     addArticleContents: (state, action) => {
       const {content, delta} = action.payload;

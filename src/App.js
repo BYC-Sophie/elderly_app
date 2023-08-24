@@ -8,6 +8,7 @@ import Playground from "./pages/playground";
 import Studio from "./pages/studio";
 import ChatGpt from "./pages/chatgpt";
 import ArticlePage from './pages/Article/article'
+import PreviewPage from './pages/preview'
 
 function App() {
   const navigate = useNavigate();
@@ -57,6 +58,9 @@ function App() {
 
         {/* Post Article Page */}
         <Route path='/article/:id' element={<ArticlePage />} />
+
+        {/* Preview Page */}
+        <Route path='/preview' element={<PreviewPage/>}/>
       </Routes>
       <BottomNavigation
         onChange={handleChange}

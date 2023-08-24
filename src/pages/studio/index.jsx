@@ -1,4 +1,4 @@
-import {Alert, Box, Button, Container, Dialog, Fab, Paper} from "@mui/material";
+import {Alert, Box, Button, Container, Dialog, Fab, Paper, Typography, Divider} from "@mui/material";
 import {ArticleEdit} from "./components/ArticleEdit";
 import { v4 as uuidv4 } from 'uuid';
 import 'quill/dist/quill.snow.css';
@@ -21,17 +21,23 @@ import {useNavigate} from "react-router-dom";
 import {MultiMediaMenu} from "./components/MultiMediaMenu";
 import {useQuillEditorContext} from "../../contexts/QuillEditorContext";
 import {RobotGPT} from "./components/RobotGPT";
+import {ImageGPT} from "./components/Image2TextGPT"
+
 import {htmlToDelta} from "./helper/parseArticle";
 export default function Studio() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [openRobot, setOpenRobot] = useState(false);
+  const [openImageBot, setOpenImageBot] = useState(false);
 
   const articleContents = useSelector(state => state.article.articleContents);
   const [editingParagraph, setEditingParagraph] = useState(null);
   const {openQuillEditor} = useQuillEditorContext();
 
+  const handleClickPreview = () => {
+    navigate('/preview')
+  }
   // TODO: 这里要改成按句子分block的形式
   const handleClickEdit = useCallback((paragraphId) => {
     const articleContent = articleContents.find(item => item.id === paragraphId);
@@ -79,7 +85,7 @@ export default function Studio() {
 
   const handleDragEnd = (parentListId, itemId, oldIndex, newIndex) => {
     if (oldIndex !== newIndex) {
-      dispatch(swapParagraph(oldIndex, newIndex));
+      dispatch(swapParagraph({oldIndex, newIndex}));
     }
 
 
@@ -94,6 +100,15 @@ export default function Studio() {
     }));
     setEditingParagraph(null);
     setOpenRobot(false);
+  }
+
+  const handleImageGPTSubmit = (paragraph) => {
+    dispatch(addArticleContents({
+      content: paragraph,
+      delta: null
+    }))
+    setEditingParagraph(null)
+    setOpenImageBot(false)
   }
 
   const handleSelectImage = async (paragraph, src) => {
@@ -113,8 +128,25 @@ export default function Studio() {
 
 
   return (
+    
     <Box paddingBottom={'50px'}>
-
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+					<Typography
+						align='left'
+						sx={{
+						m: 2,
+						display: 'inline',
+						fontSize: 24,
+						fontWeight: 'bold',
+						}}
+					>
+						编辑
+					</Typography>
+					<Button variant='contained' onClick={handleClickPreview} sx={{ marginRight: '16px' }}>
+						预览
+					</Button>
+			</Box>
+			  <Divider />
       <RobotGPT
         html={editingParagraph?.content || ''}
         onSubmit={handleGPTSubmit}
@@ -123,6 +155,16 @@ export default function Studio() {
         onClose={() => {
           setOpenRobot(false)
         }}
+      />
+
+      <ImageGPT
+        html={editingParagraph?.content || ''}
+        onSubmit={handleImageGPTSubmit}
+        open={openImageBot}
+        onClose={() => {
+          setOpenImageBot(false)
+        }}
+        
       />
       {/* <Alert style={{
         marginTop: '30px'
@@ -161,6 +203,8 @@ export default function Studio() {
               }}
               onClickGenerate={() => {
                 // TODO: Image captioning and chat
+                setEditingParagraph(paragraph)
+                setOpenImageBot(true);
               }}
               key={paragraph.id}
               id={paragraph.id}
