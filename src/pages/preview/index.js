@@ -9,14 +9,17 @@ const PreviewPage = () => {
     const articleContents = useSelector(state => state.article.articleContents)
     const navigate = useNavigate()
 
-    console.log(articleContents)
-
     const handleClickBack = () => {
         navigate(-1)
     }
 
+    const handleClickDownload = () => {
+        navigate('/download')
+    }
+
+    const handleClickTemplate = () => {}
+        // 不做了这个功能
     return (
-        // TODO: 应该可以继续sortable item，把左边的拖拽关了
         <Box paddingBottom={'50px'}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Typography
@@ -30,21 +33,22 @@ const PreviewPage = () => {
                     >
                         预览
                     </Typography>
-                    <Button variant='contained' onClick={handleClickBack} sx={{ marginRight: '16px' }}>
-                        返回
-                    </Button>
+                    <Box>
+                        <Button variant='contained' color='success' onClick={handleClickDownload} sx={{ marginRight: '16px' }}>
+                            下载
+                        </Button>
+                        {/* <Button variant='contained' color='success' onClick={handleClickTemplate} sx={{ marginRight: '16px' }}>
+                            模板/音乐
+                        </Button> */}
+                        <Button variant='contained' onClick={handleClickBack} sx={{ marginRight: '16px' }}>
+                            返回
+                        </Button>
+                    </Box>
+                    
             </Box>
                 <Divider />
         {articleContents.map(paragraph => {
             return (
-              <SortableItem
-                key={paragraph.id}
-                id={paragraph.id}
-                border={false}
-
-                contentType={paragraph.contentType}
-  
-              >
                 <div
                   key={paragraph.id}
                   className={'p-4 mt-2 w-100'} >
@@ -53,8 +57,7 @@ const PreviewPage = () => {
                       wordBreak: 'break-all'
                     }}
                     dangerouslySetInnerHTML={{__html: paragraph.content}}></div>
-                </div>
-              </SortableItem>
+                </div>  
             )
           })}
           </Box>

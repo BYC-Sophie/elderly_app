@@ -9,10 +9,14 @@ import Studio from "./pages/studio";
 import ChatGpt from "./pages/chatgpt";
 import ArticlePage from './pages/Article/article'
 import PreviewPage from './pages/preview'
+import DownloadPage from './pages/download'
 
 function App() {
   const navigate = useNavigate();
   const location = useLocation();
+
+  const hiddenBottomNavigationPaths = ['/download']; // 添加需要隐藏底部导航的路径
+
 
   const tabs = [
     {
@@ -61,8 +65,12 @@ function App() {
 
         {/* Preview Page */}
         <Route path='/preview' element={<PreviewPage/>}/>
+
+        {/* Download Page */}
+        <Route path='/download' element={<DownloadPage/>}/>
       </Routes>
-      <BottomNavigation
+      {!hiddenBottomNavigationPaths.includes(location.pathname) && (
+        <BottomNavigation
         onChange={handleChange}
         value={currentLocation}
         showLabels
@@ -75,9 +83,11 @@ function App() {
               value={tab.path}
               label={tab.label}
               icon={tab.icon} />
-          )
-        })}
-      </BottomNavigation>
+            )
+          })}
+        </BottomNavigation>
+      )}
+      
     </Box>
   );
 }

@@ -117,7 +117,11 @@ export default function ChatGpt() {
 		generatedParagraphs.forEach(element => {
 			dispatch(addArticleContents({
 				content: element,
-				delta: null
+				delta: {
+							ops: [
+								{insert: element.content}
+							]
+						}
 			}))
 		});
 		handleCloseDialog()
