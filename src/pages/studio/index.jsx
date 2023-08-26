@@ -1,5 +1,6 @@
 import {Alert, Box, Button, Container, Dialog, Fab, Paper, Typography, Divider} from "@mui/material";
-import {ArticleEdit} from "./components/ArticleEdit";
+// import {ArticleEdit} from "./components/ArticleEdit";
+import { ParagraphEdit } from "./components/ParagraphEdit";
 import { v4 as uuidv4 } from 'uuid';
 import 'quill/dist/quill.snow.css';
 import { useQuill } from 'react-quilljs';
@@ -39,39 +40,57 @@ export default function Studio() {
     navigate('/preview')
   }
   // TODO: 这里要改成按句子分block的形式
-  const handleClickEdit = useCallback((paragraphId) => {
-    const articleContent = articleContents.find(item => item.id === paragraphId);
-    if (articleContent) {
-      let tempDelta = articleContent.delta
-      if(! articleContent.delta){
-        tempDelta = {
-          ops: [
-            {insert: articleContent.content}
-          ]
-        }
-      }
-      openQuillEditor({
-        defaultValue: tempDelta,
-        title: '编辑段落',
-        onSubmit: (paragraph, delta) => {
-          dispatch(updateArticleContents({
-            paragraphId,
-            paragraph,
-            delta
-          }))
-        }
-      })
-    }
-  }, [articleContents]);
+  // const handleClickEdit = useCallback((paragraphId) => {
+  //   const articleContent = articleContents.find(item => item.id === paragraphId);
+  //   if (articleContent) {
+  //     let tempDelta = articleContent.delta
+  //     if(! articleContent.delta){
+  //       tempDelta = {
+  //         ops: [
+  //           {insert: articleContent.content}
+  //         ]
+  //       }
+  //     }
+  //     openQuillEditor({
+  //       defaultValue: tempDelta,
+  //       title: '编辑段落',
+  //       onSubmit: (paragraph, delta) => {
+  //         dispatch(updateArticleContents({
+  //           paragraphId,
+  //           paragraph,
+  //           delta
+  //         }))
+  //       }
+  //     })
+  //   }
+  // }, [articleContents]);
 
+  const [sentenceDialogOpen, setSentenceDialogOpen] = useState(false)
+  const [currentParagraphID, setCurrentParagraphID] = useState(null)
+  const handleCloseSentenceDialog = () => {
+    setSentenceDialogOpen(false)
+  }
+
+  const handleClickEdit = useCallback ((paragraphId) => {
+    const articleContent = articleContents.find(item => item.id === paragraphId)
+    setCurrentParagraphID(paragraphId)
+    setSentenceDialogOpen(true)
+
+  }, [articleContents])
 
   const handleClickOpenEditor = () => {
     openQuillEditor({
       title: '创建段落',
       onSubmit: (paragraph, delta) => {
+        const paragraphEl = document.createElement('div');
+        paragraphEl.innerHTML = paragraph
+        const pureText = paragraphEl.querySelector('p').textContent
+
         dispatch(addArticleContents({
-          content: paragraph,
-          delta
+          content: pureText,
+          delta: [
+            {insert: pureText}
+          ]
         }));
       }
     })
@@ -166,6 +185,19 @@ export default function Studio() {
         }}
         
       />
+
+
+      {/* 单段句子修改 */}
+
+      <Dialog
+        open={sentenceDialogOpen}
+        onClose={handleCloseSentenceDialog}
+      >
+        <ParagraphEdit
+          paragraphID={currentParagraphID}
+        />
+      </Dialog>
+
       {/* <Alert style={{
         marginTop: '30px'
       }} severity="warning">

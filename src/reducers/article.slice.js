@@ -1,11 +1,13 @@
 import {createSlice} from '@reduxjs/toolkit'
 import {htmlToDelta, parseHtml} from "../pages/studio/helper/parseArticle";
 import {v4 as uuidv4} from "uuid";
+import { ConstructionOutlined } from '@mui/icons-material';
 
 const htmlString = '<h1>dqwddwqdq<span style="color: rgb(230, 0, 0);">dqwdqdqdqdqwddqw</span></h1><p>dwqdqwddqwd</p><p>dqwdqdqdddd<span style="background-color: rgb(230, 0, 0);">dwqdqdqdd</span><span style="background-color: rgb(230, 0, 0); color: rgb(255, 255, 0);">dqwdqdd</span></p><p><span style="background-color: rgb(230, 0, 0); color: rgb(255, 255, 0);">ddqwdqdqdqd</span></p><p><br></p><p><br></p><p><br></p><p><span style="background-color: rgb(230, 0, 0); color: rgb(255, 255, 0);">dqdqdqd</span></p>';
 const tree = parseHtml(htmlString);
 
 const initialState = {
+  editingParagraphSentences: [],
   articleWords: [],
   currentArticle: `<p>123</p><p>456</p>`,
   articleContentsTree: [...tree],
@@ -64,12 +66,16 @@ export const articleSlice = createSlice({
       }
     },
     swapParagraph: (state, action) => {
-      const tempArticleContents = [...state.articleContents];
+      let tempArticleContents = [...state.articleContents];
       const {oldIndex, newIndex} = action.payload;
       const temp = tempArticleContents[oldIndex];
 
-      tempArticleContents[oldIndex] = tempArticleContents[newIndex];
-      tempArticleContents[newIndex] = temp;
+      tempArticleContents.splice(oldIndex, 1)
+
+      tempArticleContents.splice(newIndex, 0, temp)
+
+      // tempArticleContents[oldIndex] = tempArticleContents[newIndex];
+      // tempArticleContents[newIndex] = temp;
       state.articleContents = tempArticleContents;
 
 
@@ -114,7 +120,8 @@ export const articleSlice = createSlice({
       state.currentArticle = action.payload;
     },
     updateArticleWords: (state, action) => {
-      state.articleWords = action.payload;
+      state.editingParagraphSentences = [...action.payload];
+      console.log(state.editingParagraphSentences)
     },
     deleteWord: (state, action) => {
       let newArticleWords = [...state.articleWords];
@@ -180,21 +187,55 @@ export const articleSlice = createSlice({
       state.articleWords = newArticleWords;
     },
     sortArticleWords: (state, action) => {
-      const {parentListId, oldIndex, newIndex} = action.payload;
-      const newArticleWords = [...state.articleWords];
-
+      const {parentListId, oldIndex, newIndex, paragraphID} = action.payload;
+      const newSentenceArr = [...state.editingParagraphSentences];
+      console.log([...state.editingParagraphSentences])
       if (!parentListId) {
-        const tempItem = newArticleWords[oldIndex];
-        newArticleWords[oldIndex] = newArticleWords[newIndex];
-        newArticleWords[newIndex] = tempItem;
+        const tempItem = newSentenceArr[oldIndex];
+
+
+        newSentenceArr.splice(oldIndex, 1)
+
+        newSentenceArr.splice(newIndex, 0, tempItem)
+
+        // newSentenceArr[oldIndex] = newSentenceArr[newIndex];
+        // newSentenceArr[newIndex] = tempItem;
       } else {
-        const list = newArticleWords.find(item => item.id === parentListId);
+        const list = newSentenceArr.find(item => item.id === parentListId);
         const listWords = list.words;
         const tempItem = listWords[oldIndex];
         listWords[oldIndex] = listWords[newIndex];
         listWords[newIndex] = tempItem;
       }
-      state.articleWords = newArticleWords;
+      state.editingParagraphSentences = [...newSentenceArr];
+
+      // const currentParagraph = state.ar
+
+      console.log("newsentences",newSentenceArr)
+
+      const newParagraph = newSentenceArr.map(el => {
+        return el.content
+      }).join("")
+      
+      console.log(newParagraph)
+
+      
+
+      const tempArticleContents = [...state.articleContents].map(item => {
+        if (item.id === paragraphID) {
+          item.content = newParagraph;
+          item.delta = {
+            ops:[
+              {insert: newParagraph}
+            ]
+          };
+        }
+        return item;
+      });
+      state.articleContents = [...tempArticleContents];
+
+      console.log(state.articleContents)
+      console.log(state.editingParagraphSentences)
     }
 
   },

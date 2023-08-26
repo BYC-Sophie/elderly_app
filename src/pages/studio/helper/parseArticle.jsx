@@ -68,12 +68,18 @@ export function parseHtml(htmlStr) {
   return elements;
 }
 export const decomposeParagraph = (paragraph) => {
+  console.log(paragraph)
   let words = paragraph.match(/.+?(！|。)/g);
   words = words || [paragraph];
   return words.map(word => {
     return {
       id: uuidv4(),
-      word
+      content: word,
+      delta: {
+        ops: [
+          {insert: word}
+        ]
+      }
     }
   });
 }

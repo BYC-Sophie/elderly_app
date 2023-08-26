@@ -16,10 +16,11 @@ export const SortableItem = (
     border=true,
     endComponent,
     contentType,
+    MorevertDistanceBool,
   }) => {
 
   const [anchorEl, setAnchorEl] = useState(null);
-
+  const moreVertStyle = MorevertDistanceBool ? {left: '-20px !important', display: 'none !important'} : {left: '-10px'}
   const handleClickEdit = () => {
     if (onClickEdit) {
       onClickEdit();
@@ -119,11 +120,12 @@ export const SortableItem = (
       <div className={`w-100 ${SortableItemStyle.content}`} onClick={e => {
         setAnchorEl(e.currentTarget)
       }}>
-        <MoreVertIcon
+        {(!MorevertDistanceBool && <MoreVertIcon
           onClick={e => {
             setAnchorEl(e.currentTarget);
           }}
-          className={[SortableItemStyle.menuIcon, "drag-handle"].join(" ")} />
+          className={[SortableItemStyle.menuIcon, "drag-handle"].join(" ")} sx={moreVertStyle} />)}
+        
         {children}
       </div>
 

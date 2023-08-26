@@ -18,7 +18,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import {RobotGPT} from "./RobotGPT";
 import {MultiMediaMenu} from "./MultiMediaMenu";
 import {decomposeArticle} from "../helper/parseArticle";
-export const ArticleEdit = () => {
+export const ArticleEdit = ({paragraphID}) => {
 
   const dispatch = useDispatch();
 
@@ -29,6 +29,7 @@ export const ArticleEdit = () => {
   const currentArticle = useSelector(state => state.article.currentArticle);
   const articleWordsInStore = useSelector(state => state.article.articleWords);
 
+  
 
   const [editingValue, setEditingValue] = useState('');
   const [openRobot, setOpenRobot] = useState(false);
