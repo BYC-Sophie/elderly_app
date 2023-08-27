@@ -15,8 +15,10 @@ import CloseIcon from "@mui/icons-material/Close";
 import LoopIcon from '@mui/icons-material/Loop';
 import {authedRequest} from "../../../services/chatGPTService";
 import style from '../style.module.css';
-export const RobotGPT = ({open = true, onClose, editingWord, onSubmit, html}) => {
+import { useSelector } from 'react-redux';
 
+export const RobotGPT = ({open = true, onClose, editingWord, onSubmit, html}) => {
+  const serverURL = useSelector(state => state.article.serverURL)
   const [word, setWord] = useState('');
   const [htmlContent, setHtmlContent] = useState('');
   const [loading, setLoading] = useState(false);
@@ -48,7 +50,7 @@ export const RobotGPT = ({open = true, onClose, editingWord, onSubmit, html}) =>
         "instruction": word
       }
       console.log(data)
-      const res = await authedRequest.post(`http://localhost:8000/apis/regenerate`, {
+      const res = await authedRequest.post(`${serverURL}/apis/regenerate`, {
           "text": htmlContent,
           "instruction": word
       });
@@ -117,13 +119,13 @@ export const RobotGPT = ({open = true, onClose, editingWord, onSubmit, html}) =>
           <Stack direction={'row'} spacing={2}>
             <Button
               onClick={handleClickSend}
-              startIcon={<LoopIcon className={loading ? style.rotate : ''}/>}>Send</Button>
+              startIcon={<LoopIcon className={loading ? style.rotate : ''}/>}>发送</Button>
             <Button
               onClick={handleClickSubmit}
-              className={'ms-auto'} variant={'contained'}>Submit</Button>
+              className={'ms-auto'} variant={'contained'}>确认</Button>
             <Button
               onClick={onClose}
-              variant={'contained'} color={'inherit'}>Cancel</Button>
+              variant={'contained'} color={'inherit'}>取消</Button>
           </Stack>
         </Box>
       </DialogContent>

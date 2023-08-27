@@ -130,10 +130,11 @@ export default function Studio() {
     setOpenImageBot(false)
   }
 
-  const handleSelectImage = async (paragraph, src) => {
+  const handleSelectImage = async (paragraph, src, fileName) => {
     dispatch(insertImage({
       paragraphId: paragraph.id,
-      src
+      src,
+      fileName
     }))
   }
 
@@ -183,6 +184,7 @@ export default function Studio() {
         onClose={() => {
           setOpenImageBot(false)
         }}
+        imgFileName={editingParagraph?.contentType === 'image' ? editingParagraph?.fileName : null}
         
       />
 
@@ -244,8 +246,8 @@ export default function Studio() {
               endComponent={(
                 <Box textAlign={'center'} marginTop={'10px'}>
                   <MultiMediaMenu
-                    onSelectImage={(src) => {
-                      handleSelectImage(paragraph, src);
+                    onSelectImage={(src, fileName) => {
+                      handleSelectImage(paragraph, src, fileName);
                     }}
                     onSelectVideo={(src) => {
                       handleSelectVideo(paragraph, src)

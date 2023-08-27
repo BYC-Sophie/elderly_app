@@ -76,7 +76,7 @@ export default function ChatGpt() {
   //   }
 
   // }, [messages, prompt])
-
+  	const serverURL = useSelector(state => state.article.serverURL)
   	const [isGenerating, setIsGenerating] = useState(false)
 	const [isLoadingResponse, setIsLoadingResponse] = useState(false)
 	const [isLoading, setIsLoading] = useState(true)
@@ -97,14 +97,14 @@ export default function ChatGpt() {
 	]);
 
 	useEffect(() => {
-		async function fetchUserInfo() {
-			axios.get('user/getUser').then((resp) => {
-				const { data } = resp
+		// async function fetchUserInfo() {
+		// 	axios.get('user/getUser').then((resp) => {
+		// 		const { data } = resp
 				
-				// console.log('config', config);
-			})
-			// console.log('config', config);
-		}
+		// 		// console.log('config', config);
+		// 	})
+		// 	// console.log('config', config);
+		// }
 
 		
 	}, [])
@@ -134,7 +134,7 @@ export default function ChatGpt() {
 		setIsGenerating(true)
 		try {
 			const textData = {"text": generatedArticle, "instruction": userInstruction}
-		  	const response = await axios.post('http://localhost:8000/apis/regenerate', 
+		  	const response = await axios.post(`${serverURL}/apis/regenerate`, 
 			textData, // 将用户输入的消息发送到后端
 		  );
 	  
@@ -165,7 +165,7 @@ export default function ChatGpt() {
 		setIsLoadingResponse(true)
 		try {
 			const chatHistory = [...messages, newUserMessage]
-		  	const response = await axios.post('http://localhost:8000/apis/chatCompletion', {
+		  	const response = await axios.post(`${serverURL}/apis/chatCompletion`, {
 			chatHistory, // 将用户输入的消息发送到后端
 		  });
 		  setIsLoadingResponse(false)
@@ -200,7 +200,7 @@ export default function ChatGpt() {
 		// }
 		// try {
 		// 	const chatHistory = [...messages, newUserMessage]
-		// 	const response = await axios.post('http://localhost:8000/apis/chatCompletion', {
+		// 	const response = await axios.post(`${serverURL}/apis/chatCompletion`, {
 		// 	chatHistory, // 将用户输入的消息发送到后端
 		// 	});
 		// 	setGeneratedArticle(response.data.text)

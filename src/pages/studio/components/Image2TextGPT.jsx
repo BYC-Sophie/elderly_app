@@ -15,8 +15,15 @@ import {
   import LoopIcon from '@mui/icons-material/Loop';
   import {authedRequest} from "../../../services/chatGPTService";
   import style from '../style.module.css';
-  export const ImageGPT = ({open = true, onClose, onSubmit, html}) => {
+  import axios from "axios";
+import { useSelector } from "react-redux";
   
+  export const ImageGPT = ({open = true, onClose, onSubmit, html, imgFileName}) => {
+    const serverURL = useSelector(state => state.article.serverURL)
+
+    // const serverURL = 'http://10.35.2.78:8000'
+    const [loadingCaption, setLoadingCaption] = useState(true)
+
     const [word, setWord] = useState('');
     const [htmlContent, setHtmlContent] = useState('');
     const [loading, setLoading] = useState(false);
@@ -29,32 +36,46 @@ import {
     }
   
     useEffect(() => {
-      setHtmlContent(html);
-      const tempEl = document.createElement('div')
-      tempEl.innerHTML = html
+      async function getInitCaption() {
+        setHtmlContent(html);
+        const tempEl = document.createElement('div')
+        tempEl.innerHTML = html
 
-      const imgEl = tempEl.querySelector('img')
-      if(imgEl){
-        const src = imgEl.getAttribute('src')
-        // TODO: generate caption
-        setCaption("sample image caption")
+        const imgEl = tempEl.querySelector('img')
+        if(imgEl){
+          const src = imgEl.getAttribute('src')
+          // TODO: generate caption
+
+          try {
+            console.log(imgFileName)
+            const response = await axios.post(`${serverURL}/apis/caption`, {
+              'fileName': imgFileName
+            }
+            , // 将用户输入的消息发送到后端
+            );
+            setLoadingCaption(false)
+            if(response && response.data){
+              setCaption(response.data['caption'])
+            }
+            
+          
+          } catch (error) {
+            console.error('Error sending img:', error);
+          }
+
+        }
+        else{
+          console.log("No img el found.")
+        }
       }
-      else{
-        console.log("No img el found.")
-      }
-      
+      getInitCaption()
     }, [html]);
   
     const handleClickSend = useCallback(async () => {
       try {
         setLoading(true);
 
-        const data = {
-          "text": htmlContent,
-          "instruction": word
-        }
-        console.log(data)
-        const res = await authedRequest.post(`http://localhost:8000/apis/image2Text`, {
+        const res = await authedRequest.post(`${serverURL}/apis/image2Text`, {
             "caption": caption,
             "description": word
         });
@@ -85,7 +106,7 @@ import {
               className={'me-2'}
               src={RobotIcon}/>
             <Typography className={'me-auto'} >
-              {caption}
+              {loadingCaption? "加载中......": `这张图片好像是关于：${caption}的。您可以跟我讲一讲其中的故事吗？我会根据您的讲述帮您生成文字！`}
             </Typography>
             <IconButton>
               <CloseIcon onClick={onClose}/>

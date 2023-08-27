@@ -11,7 +11,8 @@ const initialState = {
   articleWords: [],
   currentArticle: `<p>123</p><p>456</p>`,
   articleContentsTree: [...tree],
-  articleContents: []
+  articleContents: [],
+  serverURL: "http://10.35.2.78:8000"
 }
 
 export const articleSlice = createSlice({
@@ -20,7 +21,7 @@ export const articleSlice = createSlice({
   reducers: {
 
     insertImage: (state, action) => {
-      const {paragraphId, src} = action.payload;
+      const {paragraphId, src, fileName} = action.payload;
       let tempArticleContents = [...state.articleContents];
       const paragraphIndex = tempArticleContents.findIndex(item => item.id === paragraphId);
       const html = `<p>
@@ -35,6 +36,7 @@ export const articleSlice = createSlice({
             content: html,
             delta,
             contentType: 'image',
+            fileName,
           },
           ...tempArticleContents.slice(paragraphIndex + 1)
         ];
@@ -124,16 +126,20 @@ export const articleSlice = createSlice({
       console.log(state.editingParagraphSentences)
     },
     deleteWord: (state, action) => {
-      let newArticleWords = [...state.articleWords];
-      const {parentId, itemId} = action.payload;
-      if (itemId) {
-        const list = newArticleWords.find(item => item.id === parentId);
-        list.words = list.words.filter(word => word.id !== itemId);
-      } else {
-        newArticleWords = newArticleWords.filter(item => item.id !== parentId);
-      }
+      // let newArticleWords = [...state.articleWords];
+      // const {parentId, itemId} = action.payload;
+      // if (itemId) {
+      //   const list = newArticleWords.find(item => item.id === parentId);
+      //   list.words = list.words.filter(word => word.id !== itemId);
+      // } else {
+      //   newArticleWords = newArticleWords.filter(item => item.id !== parentId);
+      // }
 
-      state.articleWords = newArticleWords;
+      // state.articleWords = newArticleWords;
+      let newEditSentences = [...state.editingParagraphSentences]
+
+
+
     },
     updateWord: (state, action) => {
       const newArticleWords = [...state.articleWords];

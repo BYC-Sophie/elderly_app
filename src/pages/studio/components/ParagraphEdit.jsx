@@ -27,6 +27,8 @@ export const ParagraphEdit = ({paragraphID}) => {
 
   const {openQuillEditor} = useQuillEditorContext();
 
+  
+
   const [sentenceArr, setSentenceArr] = useState([])
 
   // const currentArticle = useSelector(state => state.article.currentArticle);
@@ -37,7 +39,7 @@ export const ParagraphEdit = ({paragraphID}) => {
   const currentParagraph = articleContents.find(item => item.id === paragraphID)
 
 
-  const [editingValue, setEditingValue] = useState('');
+  const [editingSentence, setEditingSentence] = useState('');
   const [openRobot, setOpenRobot] = useState(false);
 
 
@@ -149,28 +151,82 @@ export const ParagraphEdit = ({paragraphID}) => {
 
 
 
-  const handleClickEditSubmit = (parentId, itemId) => {
-    dispatch(updateWord({
-      parentId,
-      itemId,
-      value: editingValue
-    }));
-  }
+  // const handleClickEditSubmit = (parentId, itemId) => {
+  //   dispatch(updateWord({
+  //     parentId,
+  //     itemId,
+  //     value: editingValue
+  //   }));
+  // }
 
-  const handleClickEditCancel = () => {
-    dispatch(cancelUpdateWord());
-  }
+  // const handleClickEditCancel = () => {
+  //   dispatch(cancelUpdateWord());
+  // }
 
-  const handleClickDelete = (parentId, itemId) => {
-    dispatch(deleteWord({
-      parentId,
-      itemId
+  const handleClickDelete = (paragraphId, sentenceId) => {
+
+    let modifiedSentenceArr = sentenceArr.reduce((result, el) => {
+      if (el.id !== sentenceId){
+        result.push(el)
+      }
+      return result
+    }, [])
+
+    setSentenceArr(modifiedSentenceArr)
+    
+    let modifiedParagraphText = modifiedSentenceArr.map(el => {
+      return el.content
+    }).join("")
+
+
+    dispatch(updateArticleContents({
+      paragraphId,
+      paragraph: modifiedParagraphText,
+      delta: {
+        ops: [
+          {insert: modifiedParagraphText.content}
+        ]
+      }
+      
     }))
+    // dispatch(deleteWord({
+    //   parentId,
+    //   itemId
+    // }))
   }
 
-  const handleGPTSubmit = (newWord) => {
+
+  const handleGPTSubmit = (newSentenceContent) => {
     setOpenRobot(false);
-    setEditingValue(newWord);
+
+    let modifiedSentence = {...editingSentence}
+    modifiedSentence.content = newSentenceContent
+
+    let modifiedSentenceArr = sentenceArr.map(el => {
+      if (el.id === modifiedSentence.id){
+        el = modifiedSentence
+      }
+      return el
+    })
+    
+    setSentenceArr(modifiedSentenceArr)
+
+    let modifiedParagraphText = modifiedSentenceArr.map(el => {
+      return el.content
+    }).join("")
+
+    dispatch(updateArticleContents({
+      paragraphId: paragraphID,
+      paragraph: modifiedParagraphText,
+      delta: {
+        ops: [
+          {insert: modifiedParagraphText.content}
+        ]
+      }
+      
+    }))
+
+    // setEditingSentence(newSentence);
   }
 
   useEffect(() => {
@@ -191,7 +247,8 @@ export const ParagraphEdit = ({paragraphID}) => {
 
       <RobotGPT
         onSubmit={handleGPTSubmit}
-        editingWord={editingValue}
+        html={editingSentence.content}
+        editingWord={''}
         open={openRobot}
         onClose={() => {
           setOpenRobot(false)
@@ -255,9 +312,10 @@ export const ParagraphEdit = ({paragraphID}) => {
                   handleClickDelete(paragraphID, sentenceItem.id)
                 }}
                 onClickReGenerate={() => {
-                  // handleClickEdit(sentenceItem.id, word.id);
-                  // setEditingValue(word.word);
-                  // setOpenRobot(true);
+                  // handleClickEdit(paragraphID, sentenceItem.id);
+                  
+                  setEditingSentence(sentenceItem);
+                  setOpenRobot(true);
                 }}
                 id={sentenceItem.id} 
                 contentType={"text"}

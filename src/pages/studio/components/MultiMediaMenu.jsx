@@ -6,13 +6,48 @@ import FormatColorTextIcon from '@mui/icons-material/FormatColorText';
 import TitleIcon from '@mui/icons-material/Title';
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import {convertImageToBase64} from "../helper/parseArticle";
+import axios from 'axios';
+import { useSelector } from 'react-redux';
+
 export const MultiMediaMenu = ({onSelectImage, onSelectVideo}) => {
+
+  const serverURL = useSelector(state => state.article.serverURL)
   const [anchorEl, setAnchorEl] = useState(null);
 
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imageUrl, setImageUrl] = useState(null);
+
   const handleSelectImage = async (e) => {
+    
     const file = e.target.files[0];
-    const src = await convertImageToBase64(file);
-    onSelectImage && onSelectImage(src);
+    setSelectedImage(file);
+
+    const src = URL.createObjectURL(file);
+    
+    
+
+    // Save img to the server
+    const formData = new FormData();
+    formData.append('image', file);
+    let fileName = ''
+    try {
+        const response = await axios.post(`${serverURL}/apis/saveImage`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      if(response && response.data){
+        fileName = response.data['fileName']
+      }
+      
+      console.log('Image uploaded successfully', fileName);
+
+
+
+    } catch (error) {
+      console.error('Error uploading image', error);
+    }
+    onSelectImage && onSelectImage(src, fileName);
     setAnchorEl(null);
   }
 
@@ -22,7 +57,6 @@ export const MultiMediaMenu = ({onSelectImage, onSelectVideo}) => {
 
     console.log(src)
     onSelectVideo && onSelectVideo(src)
-    // TODO: Select video
   }
 
   return (
