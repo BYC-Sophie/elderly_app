@@ -88,9 +88,11 @@ export default function Studio() {
 
         dispatch(addArticleContents({
           content: pureText,
-          delta: [
-            {insert: pureText}
-          ]
+          delta: {
+            ops: [
+              {insert: pureText}
+            ]
+          }
         }));
       }
     })
@@ -124,7 +126,11 @@ export default function Studio() {
   const handleImageGPTSubmit = (paragraph) => {
     dispatch(addArticleContents({
       content: paragraph,
-      delta: null
+      delta: {
+        ops: [
+          {insert: paragraph}
+        ]
+      }
     }))
     setEditingParagraph(null)
     setOpenImageBot(false)
